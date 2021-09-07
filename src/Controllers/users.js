@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const sgMail = require("@sendgrid/mail");
+
 const User = require("../Models/users");
 const { createAccessToken, createRefreshToken } = require("../Services/jwt");
 
@@ -53,7 +55,28 @@ const addUser = async (req, res) => {
 	try {
 		await User.create(userData);
 
-		res.status(200).json({ ok: true, msg: "Usuario creado correctamente." });
+		sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+		const msg = {
+			to: email,
+			from: process.env.EMAIL_SENDER,
+			subject: "Bienvenido!",
+			text: "Bienvenido y gracias por registrarte.",
+			html: "<strong>Bienvenido!</strong><p>gracias por registrarte.</p>",
+		};
+		sgMail
+			.send(msg)
+			.then(() => {
+				return res
+					.status(200)
+					.json({ ok: true, msg: "Usuario creado correctamente." });
+			})
+			.catch((error) => {
+				return res.status(500).json({
+					ok: false,
+					msg: "Error al enviar el mail de confirmacion.",
+				});
+			});
 	} catch ({ errors }) {
 		let msg = "";
 		errors.forEach((error) => {

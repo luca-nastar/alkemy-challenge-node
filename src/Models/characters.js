@@ -1,5 +1,7 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../database/connection");
+const sequelize = require("../Database/connection");
+const Chr_Movie = require("./chr_movie");
+const Movie = require("./movies");
 
 const Character = sequelize.define("Character", {
 	name: {
@@ -27,6 +29,16 @@ const Character = sequelize.define("Character", {
 		allowNull: false,
 		defaultValue: true,
 	},
+});
+
+Character.belongsToMany(Movie, {
+	through: Chr_Movie,
+	foreignKey: "id_character",
+});
+
+Movie.belongsToMany(Character, {
+	through: Chr_Movie,
+	foreignKey: "id_movie",
 });
 
 module.exports = Character;

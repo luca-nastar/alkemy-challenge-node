@@ -1,6 +1,39 @@
+const { Op } = require("sequelize");
 const Character = require("../Models/characters");
+const Movie = require("../Models/movies");
 
-const getAllCharacters = async (req, res) => {
+const getCharacters = async (req, res) => {
+	const { name = null, age = null, weight = null } = req.query;
+
+	if (name || age || weight) {
+		try {
+			const characters = await Character.findAll({
+				attributes: ["id", "name", "age", "weight", "history", "image"],
+				include: {
+					model: Movie,
+					attributes: ["title"],
+					through: { attributes: [] },
+				},
+				where: {
+					[Op.or]: {
+						name: { [Op.like]: `%${name}%` },
+						age,
+						weight,
+					},
+				},
+			});
+
+			if (characters.length === 0) {
+				return res.status(200).json({ ok: false, msg: "No hay datos" });
+			}
+
+			return res.json({ characters });
+		} catch (error) {
+			console.log(error);
+			return res.status(500).json({ ok: false, msg: "Error del servidor" });
+		}
+	}
+
 	try {
 		const characters = await Character.findAll({
 			attributes: ["name", "image"],
@@ -61,7 +94,7 @@ const editCharacter = async (req, res) => {
 				.json({ ok: false, msg: "No se pudo editar el personaje." });
 		}
 
-		res.status(200).json({
+		return res.status(200).json({
 			ok: true,
 			msg: "Personaje editado correctamente.",
 		});
@@ -112,7 +145,7 @@ const deleteCharacter = async (req, res) => {
 };
 
 module.exports = {
-	getAllCharacters,
+	getCharacters,
 	addCharacter,
 	editCharacter,
 	deleteCharacter,

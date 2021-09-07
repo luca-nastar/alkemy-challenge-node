@@ -19,6 +19,11 @@ const Movie = sequelize.define("Movie", {
 		type: DataTypes.STRING,
 		allowNull: false,
 	},
+	isActive: {
+		type: DataTypes.BOOLEAN,
+		allowNull: false,
+		defaultValue: true,
+	},
 });
 
 module.exports = Movie;
