@@ -13,6 +13,8 @@ Esta API permite conocer y modificar personajes de peliculas de Disney y saber e
 
 ## Endpoints
 
+Documentacion de Postman: `https://documenter.getpostman.com/view/13628865/U16gRTHZ`
+
 ### Users
 
 - POST "/auth/login": Realiza una comprobacion de los datos recibidos (username,password) y devuelve un Token con la informacion del usuario.
